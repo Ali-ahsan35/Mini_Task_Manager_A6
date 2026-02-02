@@ -183,7 +183,7 @@ GET /api/tasks?q=<keyword>
 #### Example
 ```
 http://127.0.0.1:5000/api/tasks?q=Flask
-``
+```
 ---
 ### 3) Sort Tasks
 #### Endpoint
@@ -193,6 +193,10 @@ GET /api/tasks?sort=<field>&order=<asc|desc>
 #### Valid sort fields:
 - created_at
 - due_date
+
+#### Valid order values:
+- asc
+- desc
 
 #### Example
 ```
