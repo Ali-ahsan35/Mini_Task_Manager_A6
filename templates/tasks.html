@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasks - Task Manager</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <a href="{{ url_for('home') }}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit;">
+          <i class="fas fa-tasks"></i>
+          <span>TaskFlow</span>
+        </a>
+      </div>
+      <div class="nav-stats">
+        <span class="stat-badge badge-todo">
+          <i class="fas fa-circle-dot"></i>
+          {{ tasks|selectattr('status', 'equalto', 'todo')|list|length }} to-do
+        </span>
+        <span class="stat-badge badge-progress">
+          <i class="fas fa-spinner"></i>
+          {{ tasks|selectattr('status', 'equalto', 'in_progress')|list|length }} in progress
+        </span>
+        <span class="stat-badge badge-done">
+          <i class="fas fa-check-circle"></i>
+          {{ tasks|selectattr('status', 'equalto', 'done')|list|length }} done
+        </span>
+        <span class="stat-badge stat-total">
+          <i class="fas fa-list"></i>
+          {{ tasks|length }} total
+        </span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    
+    <!-- Header -->
+    <section class="page-header">
+      <h1>Task List</h1>
+      <p class="subtitle">Manage and track your tasks</p>
+    </section>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+      <form method="GET" class="filter-form">
+        <!-- Status Filter -->
+        <div class="filter-group">
+          <label for="status-filter">
+            <i class="fas fa-filter"></i>
+            Filter by Status:
+          </label>
+          <select name="status" id="status-filter" onchange="this.form.submit()" class="filter-select">
+            <option value="all" {% if status=='all' %}selected{% endif %}>All</option>
+            <option value="todo" {% if status=='todo' %}selected{% endif %}>To-Do</option>
+            <option value="in_progress" {% if status=='in_progress' %}selected{% endif %}>In Progress</option>
+            <option value="done" {% if status=='done' %}selected{% endif %}>Done</option>
+          </select>
+        </div>
+
+        <!-- Sort By -->
+        <div class="filter-group">
+          <label for="sort-by">
+            <i class="fas fa-sort"></i>
+            Sort by:
+          </label>
+          <select name="sort_by" id="sort-by" onchange="this.form.submit()" class="filter-select">
+            <option value="created_at" {% if sort_by=='created_at' %}selected{% endif %}>Created Date</option>
+            <option value="due_date" {% if sort_by=='due_date' %}selected{% endif %}>Due Date</option>
+          </select>
+        </div>
+
+        <!-- Sort Order -->
+        <div class="filter-group">
+          <label for="sort-order">
+            <i class="fas fa-arrow-down-wide-short"></i>
+            Order:
+          </label>
+          <select name="order" id="sort-order" onchange="this.form.submit()" class="filter-select">
+            <option value="desc" {% if order=='desc' %}selected{% endif %}>Descending (↓)</option>
+            <option value="asc" {% if order=='asc' %}selected{% endif %}>Ascending (↑)</option>
+          </select>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tasks Table -->
+    {% if tasks|length == 0 %}
+      <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <h3>No tasks found</h3>
+        <p>
+          {% if status == 'todo' %}
+            You don't have any pending tasks.
+          {% elif status == 'in_progress' %}
+            No tasks currently in progress.
+          {% elif status == 'done' %}
+            No completed tasks yet.
+          {% else %}
+            Create tasks using the API: <code>POST /api/tasks</code>
+          {% endif %}
+        </p>
+      </div>
+    {% else %}
+      <div class="table-container">
+        <table class="tasks-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Created Date</th>
+              <th>Due Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for task in tasks %}
+            <tr class="task-row task-{{ task.status }}">
+              <td class="task-title-cell">
+                <strong>{{ task.title }}</strong>
+                {% if task.description %}
+                <div class="task-description">{{ task.description }}</div>
+                {% endif %}
+              </td>
+              <td>
+                <span class="status-badge status-{{ task.status }}">
+                  {% if task.status == 'todo' %}
+                    <i class="fas fa-circle-dot"></i> To-Do
+                  {% elif task.status == 'in_progress' %}
+                    <i class="fas fa-spinner"></i> In Progress
+                  {% else %}
+                    <i class="fas fa-check-circle"></i> Done
+                  {% endif %}
+                </span>
+              </td>
+              <td>
+                {% if task.created_at %}
+                  <i class="fas fa-clock"></i> {{ task.created_at.strftime('%Y-%m-%d') }}
+                  <!-- <div class="time-small">{{ task.created_at.strftime('%H:%M') }}</div> -->
+                {% else %}
+                  <span class="text-muted">Unknown</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if task.due_date %}
+                  <i class="fas fa-calendar"></i> {{ task.due_date }}
+                {% else %}
+                  <span class="text-muted">No due date</span>
+                {% endif %}
+              </td>
+              <td class="actions-cell">
+
+                <!-- Status dropdown -->
+                <form action="{{ url_for('set_status', task_id=task.id) }}" method="POST" style="display: inline;">
+                    <input type="hidden" name="status" value="{{ status }}">
+                    <select name="new_status" onchange="this.form.submit()" class="status-select">
+                    <option value="todo" {% if task.status == 'todo' %}selected{% endif %}>To-Do</option>
+                    <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="done" {% if task.status == 'done' %}selected{% endif %}>Done</option>
+                    </select>
+                </form>
+
+                <!-- Delete -->
+                <form action="{{ url_for('delete_task_frontend', task_id=task.id) }}" method="POST"
+                        style="display: inline;" onsubmit="return confirm('Delete this task?');">
+                    <input type="hidden" name="status" value="{{ status }}">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+
+                </td>
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-footer">
+        <p>Showing {{ tasks|length }} task(s)</p>
+      </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>TaskFlow &copy; 2026 | Built with Flask</p>
+  </footer>
+
+</body>
+</html>

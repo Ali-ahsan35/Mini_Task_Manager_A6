@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager - Home</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <i class="fas fa-tasks"></i>
+        <span>TaskFlow</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    
+    <!-- Hero Section -->
+    <section class="hero" style="margin-top: 80px;">
+      <h1 class="hero-title">Welcome to TaskFlow</h1>
+      <p class="hero-subtitle">Professional Task Management System with REST API</p>
+    </section>
+
+    <!-- Features Grid -->
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-code"></i>
+        </div>
+        <h3>REST API</h3>
+        <p>Full-featured REST API for task management with proper HTTP methods and JSON responses</p>
+        <ul class="api-list">
+          <li><code>POST /api/tasks</code> - Create task</li>
+          <li><code>GET /api/tasks</code> - List tasks</li>
+          <li><code>GET /api/tasks/&lt;id&gt;</code> - Get task</li>
+          <li><code>PUT /api/tasks/&lt;id&gt;</code> - Update task</li>
+          <li><code>DELETE /api/tasks/&lt;id&gt;</code> - Delete task</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-filter"></i>
+        </div>
+        <h3>Advanced Filtering</h3>
+        <p>Search, filter, and sort your tasks efficiently</p>
+        <ul class="api-list">
+          <li><code>?status=todo</code> - Filter by status</li>
+          <li><code>?q=keyword</code> - Search tasks</li>
+          <li><code>?sort=due_date</code> - Sort tasks</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-desktop"></i>
+        </div>
+        <h3>Web Interface</h3>
+        <p>Beautiful, responsive UI to view and manage your tasks</p>
+        <div style="margin-top: 20px;">
+          <a href="{{ url_for('tasks_page') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-right"></i> View Tasks
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Start Guide -->
+    <section class="quick-start">
+      <h2><i class="fas fa-rocket"></i> Quick Start Guide</h2>
+      
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h4>Create a Task (Postman/API)</h4>
+          <pre><code>POST http://localhost:5000/api/tasks
+Content-Type: application/json
+
+{
+  "title": "Complete project",
+  "description": "Finish the Flask assignment",
+  "status": "todo",
+  "due_date": "2026-02-10"
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h4>View Tasks</h4>
+          <p>Navigate to <a href="{{ url_for('tasks_page') }}">/tasks</a> to see all your tasks in the web interface</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h4>Manage Tasks</h4>
+          <p>Use the API to update, filter, search, and delete tasks. The UI updates automatically!</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>TaskFlow &copy; 2026 | Built with Flask</p>
+      <p class="api-docs">
+        <i class="fas fa-book"></i> 
+        API Documentation available at all <code>/api/*</code> endpoints
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
