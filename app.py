@@ -1,9 +1,11 @@
+from logs.logger import setup_logger
 from flask import Flask, request, render_template, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
 
 app = Flask(__name__)
+setup_logger(app)
 
 # Database configuration
 os.makedirs(app.instance_path, exist_ok=True)
@@ -97,8 +99,8 @@ def create_task():
         
         return jsonify(task.to_dict()), 201
         
-    except Exception as e:
-        app.logger.error(f"Error creating task: {str(e)}")
+    except Exception:
+        app.logger.exception("Error creating task")
         return jsonify({'error': 'Failed to create task'}), 500
 
 
@@ -156,8 +158,8 @@ def list_tasks():
         
         return jsonify([task.to_dict() for task in tasks]), 200
         
-    except Exception as e:
-        app.logger.error(f"Error listing tasks: {str(e)}")
+    except Exception:
+        app.logger.exception("Error creating task")
         return jsonify({'error': 'Failed to retrieve tasks'}), 500
 
 
@@ -176,8 +178,8 @@ def get_task(task_id):
         
         return jsonify(task.to_dict()), 200
         
-    except Exception as e:
-        app.logger.error(f"Error getting task: {str(e)}")
+    except Exception:
+        app.logger.exception("Error creating task")
         return jsonify({'error': 'Failed to retrieve task'}), 500
 
 
@@ -228,8 +230,8 @@ def update_task(task_id):
         
         return jsonify(task.to_dict()), 200
         
-    except Exception as e:
-        app.logger.error(f"Error updating task: {str(e)}")
+    except Exception:
+        app.logger.exception("Error creating task")
         return jsonify({'error': 'Failed to update task'}), 500
 
 
@@ -250,8 +252,8 @@ def delete_task_api(task_id):
         
         return jsonify({'message': f'Task {task_id} deleted successfully'}), 200
         
-    except Exception as e:
-        app.logger.error(f"Error deleting task: {str(e)}")
+    except Exception:
+        app.logger.exception("Error creating task")
         return jsonify({'error': 'Failed to delete task'}), 500
 
 @app.route('/tasks/<int:task_id>/set_status', methods=['POST'])
@@ -271,8 +273,8 @@ def set_status(task_id):
         status_filter = request.form.get('status', 'all')
         return redirect(url_for('tasks_page', status=status_filter))
 
-    except Exception as e:
-        app.logger.error(f"Error setting task status: {str(e)}")
+    except Exception:
+        app.logger.exception("Error creating task")
         return "Error updating task", 500
 
 
@@ -289,7 +291,6 @@ def home():
 
 
 # Tasks Page - GET /tasks
-@app.route('/tasks')
 @app.route('/tasks')
 def tasks_page():
     try:
@@ -336,8 +337,8 @@ def tasks_page():
             counts=counts
         )
 
-    except Exception as e:
-        app.logger.error(f"Error displaying tasks: {str(e)}")
+    except Exception:
+        app.logger.exception("Error creating task")
         return "Error loading tasks", 500
 
 
@@ -353,8 +354,8 @@ def mark_done(task_id):
         status_filter = request.form.get('status', 'all')
         return redirect(url_for('tasks_page', status=status_filter))
         
-    except Exception as e:
-        app.logger.error(f"Error marking task as done: {str(e)}")
+    except Exception:
+        app.logger.exception("Error creating task")
         return "Error updating task", 500
 
 
@@ -370,8 +371,8 @@ def reset_to_todo(task_id):
         status_filter = request.form.get('status', 'all')
         return redirect(url_for('tasks_page', status=status_filter))
         
-    except Exception as e:
-        app.logger.error(f"Error resetting task: {str(e)}")
+    except Exception:
+        app.logger.exception("Error creating task")
         return "Error updating task", 500
 
 
@@ -387,8 +388,8 @@ def delete_task_frontend(task_id):
         status_filter = request.form.get('status', 'all')
         return redirect(url_for('tasks_page', status=status_filter))
         
-    except Exception as e:
-        app.logger.error(f"Error deleting task: {str(e)}")
+    except Exception:
+        app.logger.exception("Error creating task")
         return "Error deleting task", 500
 
 
