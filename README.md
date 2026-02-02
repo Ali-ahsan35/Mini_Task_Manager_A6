@@ -64,8 +64,8 @@ task_manager/
 
 ### 1) Clone the project
 ```bash
-git clone <YOUR_REPO_URL>
-cd task_manager
+git clone https://github.com/Ali-ahsan35/Mini_Task_Manager_A6
+cd Mini_Task_Manager_A6
 ```
 
 ### 2) Create and activate a virtual environment
